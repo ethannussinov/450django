@@ -4,7 +4,7 @@ from .models import District, DistrictDiscipline, DistrictMetrics
 # Register your models here.
 
 class DistrictAdmin(admin.ModelAdmin):
-    list_display = ('county_district_code', 'district_name', 'county_name', 'urban_rural_status')
+    list_display = ('county_district_code', 'district_name', 'county_name', 'urban_rural_status', 'school_type')
     search_fields = ('county_district_code', 'district_name', 'county_name')
 
 class DistrictDisciplineAdmin(admin.ModelAdmin):

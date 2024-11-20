@@ -7,6 +7,8 @@ class District(models.Model):
     district_name = models.CharField(max_length=100)
     county_name = models.CharField(max_length=100, null=True, blank=True)
     urban_rural_status = models.CharField(max_length=50, null=True, blank=True)
+    school_type = models.CharField(max_length=50, choices=[('public', 'Public'), ('charter', 'Charter')], default='public')
+
 
     class Meta:
         db_table = 'district'
@@ -52,6 +54,13 @@ class DistrictMetrics(models.Model):
     dropout_rate = models.FloatField(null=True, blank=True)
     free_reduced_lunch_pct = models.FloatField(null=True, blank=True)
     act_score_avg = models.FloatField(null=True, blank=True)
+
+    enrollment_white_pct = models.FloatField(null=True, blank=True)
+    enrollment_black_pct = models.FloatField(null=True, blank=True)
+    enrollment_asian_pct = models.FloatField(null=True, blank=True)
+    enrollment_hispanic_pct = models.FloatField(null=True, blank=True)
+    enrollment_multiracial_pct = models.FloatField(null=True, blank=True)
+
 
     class Meta:
         db_table = 'district_metrics'
