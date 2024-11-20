@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customizable Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Customizable Dashboard</h1>
+
+    <form id="filter-form">
+        <label for="metrics">Select Metrics:</label>
+        <select id="metrics" name="metrics" multiple>
+            <option value="graduation_rate">Graduation Rate</option>
+            <option value="act_score_avg">ACT Score Avg</option>
+            <option value="student_teacher_ratio">Student-Teacher Ratio</option>
+            <option value="free_reduced_lunch_pct">Free Reduced Lunch %</option>
+        </select>
+        <label for="year">Year:</label>
+        <input type="text" id="year" name="year" placeholder="e.g., 2023">
+        <label for="district_code">District Code:</label>
+        <input type="text" id="district_code" name="district_code" placeholder="e.g., 96088">
+        <button type="button" onclick="fetchData()">Submit</button>
+    </form>
+
+    <div id="dashboard"></div>
+
+    <script>
+        async function fetchData() {
+            const form = document.getElementById('filter-form');
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+
+            const response = await fetch(`/api/dashboard-data/?${params.toString()}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                renderDashboard(data);
+            } else {
+                alert(data.error || 'An error occurred');
+            }
+        }
+
+        function renderDashboard(data) {
+            const dashboard = document.getElementById('dashboard');
+            dashboard.innerHTML = ''; // Clear previous content
+
+            if (data.length === 0) {
+                dashboard.innerHTML = '<p>No data available</p>';
+                return;
+            }
+
+            const years = data.map(d => d.year);
+            const metricValues = data.map(d => d.graduation_rate || 0); // Example: Graduation Rate
+
+            const trace = {
+                x: years,
+                y: metricValues,
+                type: 'scatter'
+            };
+
+            Plotly.newPlot('dashboard', [trace]);
+        }
+    </script>
+</body>
+</html>
