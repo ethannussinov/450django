@@ -8,7 +8,7 @@ from django.db.models.expressions import RawSQL
 from django.core.exceptions import FieldError
 
 def fetch_dashboard_data(request):
-    # Extract user inputs from GET params
+    #extract user inputs from GET params
     selected_metrics = request.GET.get('metrics', '').split(',')
     start_year = request.GET.get('start_year', None)
     end_year = request.GET.get('end_year', None)
@@ -21,7 +21,7 @@ def fetch_dashboard_data(request):
     aggregate = request.GET.get('aggregate', None)
     school_type = request.GET.get('school_type', None)
 
-    # Define valid metrics for each model
+    #define valid metrics for each model
     valid_metrics_metrics = [
         'dropout_rate', 'graduation_rate', 'act_score_avg', 'student_teacher_ratio', 'free_reduced_lunch_pct'
     ]
@@ -33,19 +33,19 @@ def fetch_dashboard_data(request):
 
     valid_metrics = valid_metrics_metrics + valid_metrics_discipline
 
-    # Validate selected metrics
+    #validate the selected metrics
     invalid_metrics = [metric for metric in selected_metrics if metric not in valid_metrics]
     if invalid_metrics:
         return JsonResponse({'error': f'Invalid metrics selected: {", ".join(invalid_metrics)}'}, status=400)
 
-    # Start building queries
+    #start building queries
     query = Q()
     if start_year:
         query &= Q(year__gte=int(start_year))
     if end_year:
         query &= Q(year__lte=int(end_year))
 
-    # Filter by district code(s)
+    #filter by district code(s)
     district_codes = [code.strip() for code in district_codes if code.strip()]  # Clean district codes
     if district_codes:
         valid_districts = set(District.objects.values_list('county_district_code', flat=True))
@@ -61,31 +61,31 @@ def fetch_dashboard_data(request):
     if school_type:
         query &= Q(county_district_code__school_type=school_type)
 
-    # Apply filters to both models
+    #apply filters to both models
     metrics_query = DistrictMetrics.objects.filter(query)
     discipline_query = DistrictDiscipline.objects.filter(query)
 
-    # Demographic filter
+    #demographic filter
     if demographic_filter:
         try:
             key, operator, value = parse_demographic_filter(demographic_filter)
-            value = float(value)  # Ensure value is numeric
+            value = float(value)  #ensure value is numeric
             
-            # Construct RawSQL query
+            #construct RawSQL query
             raw_sql = RawSQL(
                 f"CAST(json_extract(demographic_composition, '$.{key}') AS REAL) {operator} %s",
                 [value]
             )
             metrics_query = metrics_query.filter(raw_sql)
             
-            # Debugging: print the generated query
-            print("Demographic filter applied with RawSQL:", metrics_query.query)
+            # #debugging: print the generated query
+            # print("Demographic filter applied with RawSQL:", metrics_query.query)
             
         except ValueError as e:
             return JsonResponse({'error': f'Invalid demographic filter format: {str(e)}'}, status=400)
         except Exception as e:
             return JsonResponse({'error': f'Error applying demographic filter: {str(e)}'}, status=400)
-    # Aggregate
+    #aggregate
     if aggregate:
         if aggregate not in ['avg', 'sum']:
             return JsonResponse({'error': 'Invalid aggregate operation. Must be "avg" or "sum".'}, status=400)
@@ -98,14 +98,14 @@ def fetch_dashboard_data(request):
                 aggregates[f'{metric}_sum'] = model_query.aggregate(Sum(metric))[f'{metric}__sum']
         return JsonResponse(aggregates)
 
-    # Fetch data
+    #fetch data
     data = []
     if any(metric in valid_metrics_metrics for metric in selected_metrics):
         data += list(metrics_query.values('year', 'county_district_code', *[m for m in selected_metrics if m in valid_metrics_metrics]))
     if any(metric in valid_metrics_discipline for metric in selected_metrics):
         data += list(discipline_query.values('year', 'county_district_code', *[m for m in selected_metrics if m in valid_metrics_discipline]))
 
-    # Sorting
+    #sorting
     if sort_by:
         if sort_by in valid_metrics_metrics:
             metrics_query = metrics_query.order_by(f'{"-" if sort_order == "desc" else ""}{sort_by}')
@@ -134,6 +134,69 @@ def fetch_dashboard_data(request):
         response['metadata']['message'] = 'No records found for the given filters.'
 
     return JsonResponse(response, safe=False)
+
+
+def fetch_heatmap_data(request):
+    #extract user inputs from GET params
+    metric = request.GET.get('metric', None)
+    start_year = request.GET.get('start_year', None)
+    end_year = request.GET.get('end_year', None)
+    county = request.GET.get('county', None)
+    urban_rural = request.GET.get('urban_rural_status', None)
+    school_type = request.GET.get('school_type', None)
+
+    #validate selected metric
+    valid_metrics = [
+        'dropout_rate', 'graduation_rate', 'act_score_avg', 'student_teacher_ratio', 
+        'discipline_incidents_rate', 'discipline_removal_in_schl_susp_rate',
+        'discipline_removal_out_schl_susp_rate', 'discipline_removal_expulsion_rate',
+        'discipline_more_10_days_rate', 'free_reduced_lunch_pct'
+    ]
+    if not metric or metric not in valid_metrics:
+        return JsonResponse({'error': f'Invalid or missing metric: {metric}'}, status=400)
+
+    #build query filters
+    query = Q()
+    if start_year:
+        query &= Q(year__gte=int(start_year))
+    if end_year:
+        query &= Q(year__lte=int(end_year))
+    if county:
+        query &= Q(county_district_code__county_name=county)
+    if urban_rural:
+        query &= Q(county_district_code__urban_rural_status=urban_rural)
+    if school_type:
+        query &= Q(county_district_code__school_type=school_type)
+
+    #determine model to query
+    if metric in ['dropout_rate', 'graduation_rate', 'act_score_avg', 'student_teacher_ratio', 'free_reduced_lunch_pct']:
+        data_query = DistrictMetrics.objects.filter(query)
+    else:
+        data_query = DistrictDiscipline.objects.filter(query)
+
+    #aggregate data
+    heatmap_data = (
+        data_query
+        .values('county_district_code__county_name')
+        .annotate(metric_value=Avg(metric))
+        .order_by('county_district_code__county_name')
+    )
+
+    response = {
+        'metadata': {
+            'metric': metric,
+            'start_year': start_year,
+            'end_year': end_year,
+            'county': county,
+            'urban_rural_status': urban_rural,
+            'school_type': school_type,
+            'records': len(heatmap_data),
+        },
+        'data': list(heatmap_data),
+    }
+
+    return JsonResponse(response, safe=False)
+
 
 def parse_demographic_filter(filter_string):
     import re
