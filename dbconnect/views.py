@@ -23,7 +23,7 @@ def fetch_dashboard_data(request):
 
     #define valid metrics for each model
     valid_metrics_metrics = [
-        'dropout_rate', 'graduation_rate', 'act_score_avg', 'student_teacher_ratio', 'free_reduced_lunch_pct'
+        'dropout_rate', 'graduation_rate', 'act_score_avg', 'student_teacher_ratio', 'free_reduced_lunch_pct', 'enrollment_size'
     ]
     valid_metrics_discipline = [
         'discipline_incidents_rate', 'discipline_removal_in_schl_susp_rate',
@@ -217,3 +217,20 @@ def parse_demographic_filter(filter_string):
 
 def dashboard(request):
     return render(request, 'dashboard.html')
+
+# provide district basic info
+def get_district_data(request):
+    districts = District.objects.all()
+    district_data = [
+        {"county_district_code": district.county_district_code, "district_name": district.district_name} for district in districts
+    ]
+
+    # Get metrics excluding 'id', 'year', and 'county_district_code'
+    metric_columns = [field.name for field in DistrictMetrics._meta.get_fields()]
+    metric_columns = [col for col in metric_columns if col not in ['id', 'year', 'county_district_code']]
+
+    return JsonResponse({
+        "districts": district_data,
+        "metrics": metric_columns,
+        "counties": ["St. Louis County", "St. Louis City"]
+    })

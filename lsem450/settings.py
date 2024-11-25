@@ -53,7 +53,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  # React origin
+    'http://localhost:3000',  # Allow requests from React development server
 ]
 
 ROOT_URLCONF = "lsem450.urls"
