@@ -32,7 +32,11 @@ class DistrictMetricsAdmin(admin.ModelAdmin):
         'year',
         'county_district_code',
         'enrollment_size',
-        'demographic_composition',
+        'enrollment_white_pct',
+        'enrollment_black_pct',
+        'enrollment_asian_pct',
+        'enrollment_hispanic_pct',
+        'enrollment_multiracial_pct',
         'student_teacher_ratio',
         'graduation_rate',
         'dropout_rate',
@@ -45,3 +49,4 @@ class DistrictMetricsAdmin(admin.ModelAdmin):
 admin.site.register(District, DistrictAdmin)
 admin.site.register(DistrictDiscipline, DistrictDisciplineAdmin)
 admin.site.register(DistrictMetrics, DistrictMetricsAdmin)
+

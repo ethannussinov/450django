@@ -6,7 +6,7 @@ class District(models.Model):
     county_district_code = models.CharField(max_length=20, primary_key=True)
     district_name = models.CharField(max_length=100)
     county_name = models.CharField(max_length=100, null=True, blank=True)
-    urban_rural_status = models.CharField(max_length=50, null=True, blank=True)
+    urban_rural_status = models.CharField(max_length=50, choices=[('urban', 'Urban'), ('suburban', 'Suburban'), ('rural', 'Rural')], default='suburban')
     school_type = models.CharField(max_length=50, choices=[('public', 'Public'), ('charter', 'Charter')], default='public')
 
 
@@ -48,18 +48,19 @@ class DistrictMetrics(models.Model):
         'District', on_delete=models.CASCADE, to_field='county_district_code'
     )
     enrollment_size = models.IntegerField(null=True, blank=True)
-    demographic_composition = models.JSONField(null=True, blank=True)
-    student_teacher_ratio = models.FloatField(null=True, blank=True)
-    graduation_rate = models.FloatField(null=True, blank=True)
-    dropout_rate = models.FloatField(null=True, blank=True)
-    free_reduced_lunch_pct = models.FloatField(null=True, blank=True)
-    act_score_avg = models.FloatField(null=True, blank=True)
 
     enrollment_white_pct = models.FloatField(null=True, blank=True)
     enrollment_black_pct = models.FloatField(null=True, blank=True)
     enrollment_asian_pct = models.FloatField(null=True, blank=True)
     enrollment_hispanic_pct = models.FloatField(null=True, blank=True)
     enrollment_multiracial_pct = models.FloatField(null=True, blank=True)
+    
+    student_teacher_ratio = models.FloatField(null=True, blank=True)
+    graduation_rate = models.FloatField(null=True, blank=True)
+    dropout_rate = models.FloatField(null=True, blank=True)
+    free_reduced_lunch_pct = models.FloatField(null=True, blank=True)
+    act_score_avg = models.FloatField(null=True, blank=True)
+
 
 
     class Meta:
