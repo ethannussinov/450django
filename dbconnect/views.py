@@ -14,13 +14,11 @@ def fetch_dashboard_data(request):
     start_year = request.GET.get('start_year', None)
     end_year = request.GET.get('end_year', None)
     district_codes = request.GET.get('district_code', '').split(',')
-    urban_rural = request.GET.get('urban_rural_status', None)
-    school_type = request.GET.get('school_type', None)
 
-    print("Request Parameters:", request.GET)
-    print("Selected Metrics:", selected_metrics)
-    print("Start Year:", start_year, "End Year:", end_year)
-    print("District Codes:", district_codes)
+    # print("Request Parameters:", request.GET)
+    # print("Selected Metrics:", selected_metrics)
+    # print("Start Year:", start_year, "End Year:", end_year)
+    # print("District Codes:", district_codes)
 
     # Define valid metrics for each model
     valid_metrics_metrics = [
@@ -38,8 +36,8 @@ def fetch_dashboard_data(request):
     metrics_for_metrics_model = [m for m in selected_metrics if m in valid_metrics_metrics]
     metrics_for_discipline_model = [m for m in selected_metrics if m in valid_metrics_discipline]
 
-    print("Metrics for DistrictMetrics:", metrics_for_metrics_model)
-    print("Metrics for DistrictDiscipline:", metrics_for_discipline_model)
+    # print("Metrics for DistrictMetrics:", metrics_for_metrics_model)
+    # print("Metrics for DistrictDiscipline:", metrics_for_discipline_model)
 
     # Validation: Single district can have multiple metrics, but multiple districts must have only one metric
     if len(district_codes) > 1 and len(selected_metrics) > 1:
@@ -57,13 +55,13 @@ def fetch_dashboard_data(request):
     if district_codes:
         query &= Q(county_district_code__in=district_codes)
 
-    print("Constructed Query:", query)
+    # print("Constructed Query:", query)
 
     # Fetch data for DistrictMetrics
     metrics_data = []
     if metrics_for_metrics_model:
         metrics_query = DistrictMetrics.objects.filter(query)
-        print("Metrics Query Results:", list(metrics_query.values()))
+        # print("Metrics Query Results:", list(metrics_query.values()))
         for metric in metrics_for_metrics_model:
             metric_data = metrics_query.annotate(
                 district_name=F("county_district_code__district_name"),  # Access through the foreign key
@@ -76,7 +74,7 @@ def fetch_dashboard_data(request):
     discipline_data = []
     if metrics_for_discipline_model:
         discipline_query = DistrictDiscipline.objects.filter(query)
-        print("Discipline Query Results:", list(discipline_query.values()))
+        # print("Discipline Query Results:", list(discipline_query.values()))
         for metric in metrics_for_discipline_model:
             discipline_metric_data = discipline_query.annotate(
                 district_name=F("county_district_code__district_name"),  # Access through the foreign key
@@ -87,7 +85,7 @@ def fetch_dashboard_data(request):
 
     # Combine data
     combined_data = metrics_data + discipline_data
-    print("Combined Data:", combined_data)
+    # print("Combined Data:", combined_data)
 
     # Ensure response includes 'metric_value' for all requested metrics
     structured_data = [
@@ -113,7 +111,9 @@ def fetch_dashboard_data(request):
         'data': structured_data,
     }
 
-    print("Structured Data Sent to Frontend:", structured_data)
+    # print("Structured Data Sent to Frontend:", structured_data)
+    print("Intersection Graph Data:", structured_data)
+
 
     if not structured_data:
         response['metadata']['message'] = 'No records found for the given filters.'
