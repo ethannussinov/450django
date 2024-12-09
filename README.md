@@ -205,3 +205,20 @@ If you created a superuser, you can log into the Django admin panel to manage th
 ## Running the React Frontend
 
 Once you’ve set up the backend, you can connect it from a [React frontend](https://github.com/ethannussinov/450react). Ensure the React app makes API requests to the Django server at `http://127.0.0.1:8080/`.
+
+---
+
+# ENGR 450
+Group: Legal Services of Eastern Missouri
+
+## Group Member
+- **Miranda Holloway**
+- **Jane Liang**
+- **Tracy Ling**
+- **Ethan Nussinov**
+- **Weikai Rao**
+
+## [Project folder](https://drive.google.com/drive/folders/1KImTPVNQsajQ0MIaXFMV0oq46aQdnxQT?usp=sharing)
+- [Notes](https://docs.google.com/document/d/1dKP0HwJ23uh5wZUP7m7hoKlWuwNvSVmQHEZ3nOAO3nA/edit?usp=sharing)
+- [Workflow](https://docs.google.com/document/d/1qj174FcWKuHYrVdtRbXpAXxmEfMV8sX9JkUPP5KFsqY/edit?usp=sharing)
+- [Group Agreement](https://docs.google.com/document/d/1Yvs95x9c3Z8XzddlH2N_Etrt5KiJcsiE/edit?usp=sharing&ouid=113753529268353883148&rtpof=true&sd=true)
