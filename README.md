@@ -1,4 +1,4 @@
-# 450django - Backend API for React Frontend
+# 450django - Backend API for [React Frontend](https://github.com/ethannussinov/450react)
 
 This repository contains the backend Django application that serves as an API for the React frontend. The project uses SQLite as the database for local development. The following tutorial will guide you through setting up this project from scratch, both on Windows and macOS.
 
