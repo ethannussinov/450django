@@ -50,7 +50,7 @@ Before starting, you need to have some basic software installed on your computer
 #### **macOS Instructions**
 
 1. **Install Python**:
-   - Download the installer from [Python's website](https://www.python.org/downloads/), or you can install it using **Homebrew** if you have it installed by running:
+   - Download the installer from [Python's website](https://www.python.org/downloads/), or you can install it using [**Homebrew**](https://brew.sh/) if you have it installed by running:
      ```bash
      brew install python
      ```
