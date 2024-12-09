@@ -170,11 +170,11 @@ Now that everything is set up, you can run the Django backend server locally.
    ```
 
    This will start the server on port 8080. You should see output similar to this:
-   ```bash
+   ```
    Starting development server at http://127.0.0.1:8080/
    ```
 2. Open your web browser and visit:
-    ```bash
+    ```
     http://127.0.0.1:8080/admin
     ```
     
@@ -187,7 +187,7 @@ You should see a login page for administration.
 If you created a superuser, you can log into the Django admin panel to manage the project.
 
 1. In your browser, go to:
-    ```bash
+    ```
     http://127.0.0.1:8080/admin/
     ```
 
