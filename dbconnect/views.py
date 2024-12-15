@@ -29,7 +29,10 @@ def fetch_dashboard_data(request):
     valid_metrics_discipline = [
         'discipline_incidents_rate', 'discipline_removal_in_schl_susp_rate',
         'discipline_removal_out_schl_susp_rate', 'discipline_removal_expulsion_rate',
-        'discipline_more_10_days_rate'
+        'discipline_more_10_days_rate',
+        'discipline_incidents', 'discipline_removal_in_schl_susp',
+        'discipline_removal_out_schl_susp', 'discipline_removal_expulsion',
+        'discipline_more_10_days'
     ]
 
     # Separate metrics based on the model they belong to
